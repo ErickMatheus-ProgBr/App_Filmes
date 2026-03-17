@@ -1,16 +1,38 @@
-# app_film
+# 🎬 Catálogo de Filmes - Flutter
 
-A new Flutter project.
+Este é um projeto de aplicativo mobile desenvolvido em **Flutter** para o curso de desenvolvimento básico. O app exibe uma lista de filmes e permite visualizar detalhes de cada um através de uma navegação dinâmica com passagem de argumentos.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🚀 Funcionalidades
 
-A few resources to get you started if this is your first Flutter project:
+* **Lista de Filmes:** Exibição de cards personalizados com posters dos filmes.
+* **Navegação Dinâmica:** Uso de `Navigator` com rotas nomeadas.
+* **Argumentos de Rota:** Passagem de objetos entre telas usando a classe `ScreenArguments`.
+* **Interface Limpa:** Design focado na experiência do usuário (UX).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ Tecnologias Utilizadas
+
+* **Flutter:** Framework UI da Google.
+* **Dart:** Linguagem de programação principal.
+* **Material Design:** Padrão de design visual.
+
+---
+
+## 📁 Estrutura do Projeto
+
+Abaixo, a organização das pastas principais dentro do diretório `lib/`:
+
+* `models/`: Contém a classe `Filme` (modelo de dados).
+* `screens/`: Contém a `TelaInicial` e a `ExtractArgumentsScreen` (tela de detalhes).
+* `assets/`: Imagens dos posters utilizados no app.
+
+---
+
+## ⚙️ Como Executar o Projeto
+
+1. **Clone este repositório:**
+   ```bash
+   git clone [https://github.com/SEU_USUARIO/app_filme.git](https://github.com/SEU_USUARIO/app_filme.git)
