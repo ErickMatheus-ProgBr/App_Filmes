@@ -1,6 +1,6 @@
 # 🎬 Catálogo de Filmes - Flutter
 
-Este é um projeto de aplicativo mobile desenvolvido em **Flutter** para o curso de desenvolvimento básico. O app exibe uma lista de filmes e permite visualizar detalhes de cada um através de uma navegação dinâmica com passagem de argumentos.
+Este é um projeto de aplicativo mobile desenvolvido em **Flutter**. O app exibe uma lista de filmes e permite visualizar detalhes de cada um através de uma navegação dinâmica com passagem de argumentos.
 
 ---
 
