@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
 
-                          SizedBox(height: 12.0),
+                          SizedBox(height: 13.0),
                           Text(
                             "Brothers tells the story of a reformed criminal (Josh Brolin) whose attempt at going straight is derailed when he reunites with his sanity-testing twin brother (Peter Dinklage) on a cross-country road trip for the score of a lifetime. Dodging bullets, the law, and an overbearing mother along the way, they must heal their severed family bond before they end up killing each other.",
                             style: TextStyle(color: Colors.black54),
