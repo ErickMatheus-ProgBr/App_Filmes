@@ -1,5 +1,7 @@
+import 'package:app_film/screens/screen_details.dart';
 import 'package:app_film/thema/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:app_film/widgets/card_film.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,6 +11,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final List<Map<String, String>> myFilms = [
+    {"title": "Brothers", "image": "assets/amigos.jpg"},
+    {"title": "Vingadores", "image": "assets/vingadores.jpg"},
+    {"title": "Interestelar", "image": "assets/interestelar.jpg"},
+    {"title": "Batman", "image": "assets/batman.jpg"},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,50 +66,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            SizedBox(height: 15),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadiusGeometry.circular(12.0),
-                      child: Image.asset(
-                        "assets/amigos.jpg",
-                        width: 105,
-                        height: 140,
-                        fit: BoxFit.cover,
-                      ),
+            SizedBox(height: 15.0),
+
+            SizedBox(
+              height: 320,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+
+                itemCount: myFilms.length,
+                itemBuilder: (context, index) {
+                  final films = myFilms[index];
+
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ScreenDetails(film: films)),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: CardFilm(title: films["title"]!, image: films["image"]!),
                     ),
-
-                    SizedBox(width: 14.0),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "BROTHERS",
-                            style: TextStyle(
-                              color: AppColors.fourthColor,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-
-                          SizedBox(height: 12.0),
-                          Text(
-                            "Brothers tells the story of a reformed criminal (Josh Brolin) whose attempt at going straight is derailed when he reunites with his sanity-testing twin brother (Peter Dinklage) on a cross-country road trip for the score of a lifetime. Dodging bullets, the law, and an overbearing mother along the way, they must heal their severed family bond before they end up killing each other.",
-                            style: TextStyle(color: Colors.black54),
-                            maxLines: 4,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],
