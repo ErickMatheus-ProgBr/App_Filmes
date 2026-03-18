@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_film/thema/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:app_film/screens/home_screen.dart';
 
@@ -41,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.thirdColor,
       body: Center(
         child: FadeTransition(
           opacity: animation,
@@ -51,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               "Filmes Flix",
               style: TextStyle(
                 fontSize: 40,
-                color: Colors.lightGreenAccent,
+                color: AppColors.firstColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
