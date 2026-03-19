@@ -12,8 +12,8 @@ class ScreenDetails extends StatelessWidget {
       backgroundColor: AppColors.blackColor,
 
       appBar: AppBar(
-        title: Text(film["title"]!.toUpperCase()),
-        backgroundColor: AppColors.fourthColor,
+        title: Text("Voltar", style: TextStyle(color: AppColors.thirdColor, fontSize: 20)),
+        backgroundColor: AppColors.blackColor,
         elevation: 0,
       ),
 
@@ -21,7 +21,27 @@ class ScreenDetails extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(film["image"]!, width: double.infinity, height: 350, fit: BoxFit.cover),
+            Container(
+              width: double.infinity,
+              height: 400,
+
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+
+              clipBehavior: Clip.antiAlias,
+
+              child: Image.asset(
+                film["image"] ?? "assets.placeholder.jpg",
+                width: double.infinity,
+                height: 350,
+                fit: BoxFit.contain,
+                alignment: Alignment.center,
+              ),
+            ),
 
             Padding(
               padding: const EdgeInsetsGeometry.all(20.0),
@@ -29,28 +49,43 @@ class ScreenDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    film["title"]!.toLowerCase(),
+                    film["title"] ?? "  Untitled.",
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 42,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.fourthColor,
+                      color: AppColors.thirdColor,
+                      letterSpacing: 1.3,
                     ),
                   ),
 
-                  const SizedBox(height: 20), // Espaço
-                  // 3. O RESUMO (Finalmente ele aparece completo!)
+                  const SizedBox(height: 13),
+
+                  const Row(
+                    children: [
+                      Icon(Icons.calendar_today, color: AppColors.whiteColor, size: 18),
+                      SizedBox(width: 8),
+                      Text("2024", style: TextStyle(color: AppColors.whiteColor)),
+                      SizedBox(width: 20),
+                      Icon(Icons.access_time, color: AppColors.whiteColor, size: 19),
+                      SizedBox(width: 8),
+                      Text("2h 30min", style: TextStyle(color: AppColors.whiteColor)),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
                   const Text(
-                    "Description",
+                    "Descrição",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppColors.thirdColor,
                     ),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     // Pegamos a chave 'resumo' ou 'description' que está na sua lista
-                    film["description"]!,
+                    film["description"] ?? film["resumo"] ?? "no description",
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white70,
