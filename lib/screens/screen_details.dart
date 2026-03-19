@@ -10,35 +10,41 @@ class ScreenDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.blackColor,
-
       appBar: AppBar(
-        title: Text(film["title"]!.toUpperCase()),
+        // Usamos ?? "" para garantir que o app não trave se o título sumir
+        title: Text((film["title"] ?? "Detalhes").toUpperCase()),
         backgroundColor: AppColors.fourthColor,
         elevation: 0,
       ),
-
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(film["image"]!, width: double.infinity, height: 350, fit: BoxFit.cover),
+            // Imagem do pôster em destaque
+            Image.asset(
+              film["image"] ?? "assets/placeholder.jpg",
+              width: double.infinity,
+              height: 350,
+              fit: BoxFit.cover,
+            ),
 
             Padding(
-              padding: const EdgeInsetsGeometry.all(20.0),
+              // CORREÇÃO: Trocado EdgeInsetsGeometry por EdgeInsets
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    film["title"]!.toLowerCase(),
-                    style: TextStyle(
+                    (film["title"] ?? "Sem Título").toLowerCase(),
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: AppColors.fourthColor,
                     ),
                   ),
 
-                  const SizedBox(height: 20), // Espaço
-                  // 3. O RESUMO (Finalmente ele aparece completo!)
+                  const SizedBox(height: 20),
+
                   const Text(
                     "Description",
                     style: TextStyle(
@@ -47,16 +53,14 @@ class ScreenDetails extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
+
                   const SizedBox(height: 10),
+
                   Text(
-                    // Pegamos a chave 'resumo' ou 'description' que está na sua lista
-                    film["description"]!,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.white70,
-                      height: 1.5, // Dá um respiro entre as linhas do texto
-                    ),
-                    textAlign: TextAlign.justify, // Texto alinhado dos dois lados
+                    // Tentamos pegar 'description', se não existir, usamos um texto padrão
+                    film["description"] ?? "Nenhuma descrição disponível para este filme.",
+                    style: const TextStyle(fontSize: 16, color: Colors.white70, height: 1.5),
+                    textAlign: TextAlign.justify,
                   ),
                 ],
               ),
