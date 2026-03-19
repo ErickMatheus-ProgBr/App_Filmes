@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.thirdColor,
+      backgroundColor: AppColors.blackColor,
       body: Center(
         child: FadeTransition(
           opacity: animation,
@@ -52,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               "Filmes Flix",
               style: TextStyle(
                 fontSize: 40,
-                color: AppColors.firstColor,
+                color: AppColors.thirdColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
