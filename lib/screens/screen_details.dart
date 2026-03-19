@@ -39,18 +39,19 @@ class ScreenDetails extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.fourthColor,
+                      color: AppColors.thirdColor,
+                      letterSpacing: 1.3,
                     ),
                   ),
 
                   const SizedBox(height: 20),
 
                   const Text(
-                    "Description",
+                    "Descrição",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppColors.thirdColor,
                     ),
                   ),
 
