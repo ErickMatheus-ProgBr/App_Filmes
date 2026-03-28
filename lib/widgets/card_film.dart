@@ -9,42 +9,35 @@ class CardFilm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: 160,
-      child: Card(
-        elevation: 4,
-        margin: const EdgeInsets.all(0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min, // Faz o card se ajustar ao conteúdo
-            children: [
-              ClipRRect(
-                // CORREÇÃO: Trocado BorderRadiusGeometry por BorderRadius
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.asset(image, width: 160, height: 220, fit: BoxFit.cover),
-              ),
-
-              const SizedBox(height: 10.0),
-
-              // O título do filme
-              Text(
-                title.toUpperCase(),
-                style: const TextStyle(
-                  color: AppColors.fourthColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 2, // Permite até 2 linhas
-                overflow: TextOverflow.ellipsis, // Adiciona "..." se for muito longo
-              ),
-
-              // Removido o SizedBox de 12.0 do final para o card não ficar com espaço vazio
-            ],
+      margin: const EdgeInsets.only(right: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.network(
+              image, // <--- IMPORTANTE: Tem que ser Image.network
+              height: 230,
+              width: 160,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  Container(height: 230, color: Colors.grey, child: const Icon(Icons.broken_image)),
+            ),
           ),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: AppColors.thirdColor,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

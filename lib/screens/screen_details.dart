@@ -30,7 +30,7 @@ class ScreenDetails extends StatelessWidget {
 
             Padding(
               // CORREÇÃO: Trocado EdgeInsetsGeometry por EdgeInsets
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
