@@ -24,23 +24,38 @@ class _HomeScreenState extends State<HomeScreen> {
   final String urlImagemBase = 'https://image.tmdb.org/t/p/w500';
 
   Future<void> fetchMovies() async {
-    const url =
-        'https://api.themoviedb.org/3/movie/popular?api_key=839ee2f7b3c54705b7711a9920805bf0&language=pt-BR';
+    List<Movie> listaTemporaria = [];
+    const String apiKey = "839ee2f7b3c54705b7711a9920805bf0";
+    // const url =
+    //     'https://api.themoviedb.org/3/movie/popular?api_key=839ee2f7b3c54705b7711a9920805bf0&language=pt-BR';
 
     try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final List results = data['results'];
+      // 2. O Loop: vai rodar 3 vezes (página 1, depois 2, depois 3)
+      for (int pagina = 1; pagina <= 3; pagina++) {
+        final url =
+            'https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&language=pt-BR&page=$pagina';
 
-        if (mounted) {
-          setState(() {
-            listaFilmes = results.map((item) => Movie.fromJson(item)).toList();
-          });
+        final response = await http.get(Uri.parse(url));
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          final List results = data['results'];
+
+          // 3. O 'map' transforma o JSON em objeto Movie (que você acabou de aprender!)
+          // O 'addAll' vai adicionando os novos filmes ao que já tinha na sacola
+          listaTemporaria.addAll(results.map((item) => Movie.fromJson(item)).toList());
         }
       }
+
+      // 4. Quando o loop acabar, atualizamos a tela
+      if (mounted) {
+        setState(() {
+          // .take(50) garante que, mesmo vindo 60 filmes (20x3), a gente só use 50
+          listaFilmes = listaTemporaria.take(51).toList();
+        });
+      }
     } catch (e) {
-      print("Erro ao buscar filmes: $e");
+      print("Erro na API: $e");
     }
   }
 
@@ -71,6 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final listaBanner = listaFilmes.take(5).toList(); // Pega os 5 primeiros
+    final listaLancamentos = listaFilmes.skip(5).take(10).toList(); // Pula 5, pega 10
+    final listaPopulares = listaFilmes.skip(15).toList(); // Pula os 15 que já usamos e pega o resto
+
     return Scaffold(
       backgroundColor: AppColors.blackColor,
       appBar: AppBar(
@@ -111,9 +130,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 580,
                     child: PageView.builder(
                       controller: _pageController,
-                      itemCount: listaFilmes.length > 5 ? 5 : listaFilmes.length,
+                      itemCount: listaBanner.length,
                       itemBuilder: (context, index) {
-                        final movie = listaFilmes[index];
+                        final movie = listaBanner[index];
                         return Image.network(
                           '$urlImagemBase${movie.posterPath}',
                           fit: BoxFit.cover,
@@ -143,9 +162,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 350,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: listaFilmes.length,
+                            itemCount: listaLancamentos.length,
                             itemBuilder: (context, index) {
-                              final movie = listaFilmes[index];
+                              final movie = listaLancamentos[index];
                               final linkFinal = '$urlImagemBase${movie.posterPath}';
 
                               return InkWell(
@@ -153,9 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ScreenDetails(
-                                        film: {"title": movie.title, "image": linkFinal},
-                                      ),
+                                      builder: (context) => ScreenDetails(movie: movie),
                                     ),
                                   );
                                 },
@@ -171,8 +188,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Column(
+                      // Garante que o título "POPULARES" fique na esquerda
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "POPULARES",
                           style: TextStyle(
                             color: AppColors.whiteColor,
@@ -181,7 +200,39 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 200),
+                        const SizedBox(height: 25), // Diminuí o espaço de 200 para 15
+
+                        GridView.builder(
+                          // ESSAS DUAS LINHAS SÃO OBRIGATÓRIAS:
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+
+                          itemCount: listaPopulares.length,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3, // 3 filmes na horizontal
+                            crossAxisSpacing: 5, // Espaço entre colunas
+                            mainAxisSpacing: 1, // Espaço entre linhas
+                            childAspectRatio:
+                                0.38, // Ajusta a altura do card (aumente se o texto sumir)
+                          ),
+                          itemBuilder: (context, index) {
+                            final movie = listaPopulares[index];
+                            final linkFinal = "$urlImagemBase${movie.posterPath}";
+                            // return CardFilm(title: movie.title, image: linkFinal);
+
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ScreenDetails(movie: movie),
+                                  ),
+                                );
+                              },
+                              child: CardFilm(title: movie.title, image: linkFinal),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
