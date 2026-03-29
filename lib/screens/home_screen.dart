@@ -104,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // BANNER
                   SizedBox(
@@ -130,8 +131,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Lançamentos",
-                          style: TextStyle(fontSize: 21, color: AppColors.whiteColor),
+                          "LANÇAMENTOS",
+                          style: TextStyle(
+                            fontSize: 21,
+                            color: AppColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         SizedBox(
@@ -159,6 +164,24 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Column(
+                      children: [
+                        Text(
+                          "POPULARES",
+                          style: TextStyle(
+                            color: AppColors.whiteColor,
+                            fontSize: 21,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(height: 200),
                       ],
                     ),
                   ),
