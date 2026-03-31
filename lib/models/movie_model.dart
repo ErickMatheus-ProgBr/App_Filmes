@@ -1,24 +1,27 @@
 class Movie {
+  final int id;
   final String title;
-  final String posterPath;
   final String backdropPath;
+  final String posterPath; // <--- ADICIONE ESTA LINHA
   final String overview;
   final double voteAverage;
 
   Movie({
+    required this.id,
     required this.title,
-    required this.posterPath,
     required this.backdropPath,
+    required this.posterPath, // <--- ADICIONE ESTA LINHA
     required this.overview,
     required this.voteAverage,
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
     return Movie(
+      id: json['id'] ?? 0,
       title: json['title'] ?? '',
-      posterPath: json['poster_path'] ?? '',
       backdropPath: json['backdrop_path'] ?? '',
-      overview: json['overview'] ?? 'Sinopse não disponível.',
+      posterPath: json['poster_path'] ?? '', // <--- GARANTA QUE ESTÁ ASSIM
+      overview: json['overview'] ?? '',
       voteAverage: (json['vote_average'] as num).toDouble(),
     );
   }
