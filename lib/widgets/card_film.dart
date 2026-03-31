@@ -18,10 +18,20 @@ class CardFilm extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: Image.network(
-              image, // <--- IMPORTANTE: Tem que ser Image.network
+              image,
               height: 230,
               width: 160,
               fit: BoxFit.cover,
+              // ADICIONE ISSO AQUI:
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  height: 230,
+                  width: 160,
+                  color: Colors.grey[900],
+                  child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+                );
+              },
               errorBuilder: (context, error, stackTrace) =>
                   Container(height: 230, color: Colors.grey, child: const Icon(Icons.broken_image)),
             ),
