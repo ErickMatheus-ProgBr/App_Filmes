@@ -26,36 +26,38 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> fetchMovies() async {
     List<Movie> listaTemporaria = [];
     const String apiKey = "839ee2f7b3c54705b7711a9920805bf0";
-    // const url =
-    //     'https://api.themoviedb.org/3/movie/popular?api_key=839ee2f7b3c54705b7711a9920805bf0&language=pt-BR';
 
     try {
-      // 2. O Loop: vai rodar 3 vezes (página 1, depois 2, depois 3)
+      print("Iniciando busca de filmes...");
       for (int pagina = 1; pagina <= 3; pagina++) {
         final url =
             'https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&language=pt-BR&page=$pagina';
 
         final response = await http.get(Uri.parse(url));
+        print("Página $pagina: Status ${response.statusCode}");
 
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
           final List results = data['results'];
 
-          // 3. O 'map' transforma o JSON em objeto Movie (que você acabou de aprender!)
-          // O 'addAll' vai adicionando os novos filmes ao que já tinha na sacola
-          listaTemporaria.addAll(results.map((item) => Movie.fromJson(item)).toList());
+          for (var item in results) {
+            try {
+              listaTemporaria.add(Movie.fromJson(item));
+            } catch (e) {
+              print("Erro ao converter um filme específico: $e");
+            }
+          }
         }
       }
 
-      // 4. Quando o loop acabar, atualizamos a tela
       if (mounted) {
         setState(() {
-          // .take(50) garante que, mesmo vindo 60 filmes (20x3), a gente só use 50
-          listaFilmes = listaTemporaria.take(51).toList();
+          listaFilmes = listaTemporaria;
         });
+        print("Sucesso! Filmes carregados: ${listaFilmes.length}");
       }
     } catch (e) {
-      print("Erro na API: $e");
+      print("Erro crítico na API ou Conexão: $e");
     }
   }
 
@@ -103,20 +105,22 @@ class _HomeScreenState extends State<HomeScreen> {
         iconTheme: const IconThemeData(color: AppColors.whiteColor),
       ),
       drawer: Drawer(
-        child: Container(
-          color: Colors.black,
-          child: ListView(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.movie, color: AppColors.whiteColor, size: 37),
-                title: const Text(
-                  "Categorias",
-                  style: TextStyle(color: AppColors.whiteColor, fontSize: 33),
-                ),
-                onTap: () => Navigator.pop(context),
-              ),
-            ],
-          ),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.black),
+              child: Text('CineApp', style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.movie),
+              title: const Text("Categorias"),
+              onTap: () {
+                Navigator.pop(context); // Fecha o drawer
+                // Adicione sua navegação aqui se tiver tela de categorias
+              },
+            ),
+          ],
         ),
       ),
       body: listaFilmes.isEmpty
@@ -134,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         final movie = listaBanner[index];
                         return Image.network(
-                          '$urlImagemBase${movie.posterPath}',
+                          '$urlImagemBase${movie.backdropPath}', // Use backdropPath para banners (horizontal)
                           fit: BoxFit.cover,
                         );
                       },
@@ -163,11 +167,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: listaLancamentos.length,
+                            // Procure por volta da linha 135
                             itemBuilder: (context, index) {
                               final movie = listaLancamentos[index];
-                              final linkFinal = '$urlImagemBase${movie.posterPath}';
+                              final linkFinal =
+                                  '$urlImagemBase${movie.posterPath}'; // Use posterPath aqui
 
                               return InkWell(
+                                // ... restante do código
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -217,8 +224,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           itemBuilder: (context, index) {
                             final movie = listaPopulares[index];
+
+                            // CORRIJA ESTA LINHA:
                             final linkFinal = "$urlImagemBase${movie.posterPath}";
-                            // return CardFilm(title: movie.title, image: linkFinal);
 
                             return InkWell(
                               onTap: () {
