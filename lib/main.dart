@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:app_film/screens/splash_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyAppFilm());
 }
 
