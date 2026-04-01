@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Movie> listaTemporaria = [];
     const String apiKey = "839ee2f7b3c54705b7711a9920805bf0";
     try {
-      for (int pagina = 1; pagina <= 10; pagina++) {
+      for (int pagina = 4; pagina <= 5; pagina++) {
         final url =
             'https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&language=pt-BR&page=$pagina';
         final response = await http.get(Uri.parse(url));
