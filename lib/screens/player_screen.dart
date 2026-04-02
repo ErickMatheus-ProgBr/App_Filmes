@@ -49,7 +49,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse('https://vidsrc.xyz/embed/movie/${widget.movieId}?ds_lang=pt'));
+      ..loadRequest(
+        Uri.parse('https://vidsrc.xyz/embed/movie/${widget.movieId}?ds_&language=pt-BR&region=BR'),
+      );
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'dart:async' as async_timer;
 import 'dart:convert';
+import 'package:app_film/screens/categories_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_film/models/movie_model.dart';
 import 'package:app_film/screens/screen_details.dart';
@@ -17,6 +18,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   TextEditingController _controleBusca = TextEditingController(); // O "controle" do campo
   List<Movie> filmesFiltrados = []; // Uma lista vazia que vai guardando o que a gente achar
+
+  bool isLoading = false;
+  List<Movie> filmesBusca = [];
+
+  final String apiKey = "839ee2f7b3c54705b7711a9920805bf0"; // coloca sua chave aqui
 
   final Map<String, int> generos = {
     "Ação": 28,
@@ -38,23 +44,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Movie> filmesPorCategoria = [];
 
-  Future<void> fetchPorCategoria(int generoId) async {
-    const String apiKey = "839ee2f7b3c54705b7711a9920805bf0";
+  Future<void> searchFilmes(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        filmesBusca = [];
+      });
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
     final url =
-        'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR&with_genres=$generoId&page=1';
+        'https://api.themoviedb.org/3/search/movie?api_key=$apiKey&language=pt-BR&query=$query';
 
     try {
       final response = await http.get(Uri.parse(url));
+
+      print(response.body); // 👈 DEBUG
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List results = data['results'];
+
         setState(() {
-          filmesPorCategoria = results.map((item) => Movie.fromJson(item)).toList();
+          filmesBusca = results.map((e) => Movie.fromJson(e)).toList();
         });
       }
     } catch (e) {
-      print("Erro ao buscar categoria: $e");
+      print("ERRO REAL: $e");
     }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   // Lógica da API (Você já tinha feito e está ótima!)
@@ -64,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       for (int pagina = 4; pagina <= 5; pagina++) {
         final url =
-            'https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&language=pt-BR&page=$pagina';
+            'https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&language=pt-BR&region=BRpage=$pagina';
         final response = await http.get(Uri.parse(url));
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
@@ -267,13 +291,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
+
+                    // 🔥 AQUI ESTÁ A MUDANÇA IMPORTANTE
                     onChanged: (valor) {
-                      setState(() {
-                        // Filtra a lista original e guarda na lista de busca
-                        filmesFiltrados = listaFilmes
-                            .where((m) => m.title.toLowerCase().contains(valor.toLowerCase()))
-                            .toList();
-                      });
+                      searchFilmes(valor);
                     },
                   ),
                   const SizedBox(height: 20),
@@ -283,9 +304,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Text("Pesquisar Filmes", style: TextStyle(color: Colors.white)),
                           )
                         : ListView.builder(
-                            itemCount: filmesFiltrados.length,
+                            itemCount: filmesBusca.length,
                             itemBuilder: (context, index) {
-                              final filme = filmesFiltrados[index];
+                              final filme = filmesBusca[index];
                               return ListTile(
                                 onTap: () {
                                   Navigator.push(
@@ -311,12 +332,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             )
           // --- CAMINHO FINAL: OUTRAS ABAS (Categorias/Perfil) ---
-          : Center(
-              child: Text(
-                _currentIndex == 2 ? "Categorias em breve" : "Perfil em breve",
-                style: const TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            ),
+          : _currentIndex == 2
+          ? const CategoriesScreen()
+          : _currentIndex == 3
+          ? const Center(
+              child: Text("Perfil em breve", style: TextStyle(color: Colors.white, fontSize: 20)),
+            )
+          : const SizedBox(),
 
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
