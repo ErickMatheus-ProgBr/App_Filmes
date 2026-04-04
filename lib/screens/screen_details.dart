@@ -18,6 +18,7 @@ class ScreenDetails extends StatelessWidget {
         slivers: [
           // Barra de topo com a imagem de fundo (Backdrop)
           SliverAppBar(
+            leading: Icon(Icons.arrow_back_rounded, color: AppColors.whiteColor, size: 35),
             expandedHeight: 300,
             pinned: true,
             backgroundColor: AppColors.blackColor,
