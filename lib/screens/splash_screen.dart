@@ -67,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               // O sigmaX e sigmaY recebem o valor que está variando na animação.
               imageFilter: ImageFilter.blur(sigmaX: _animation.value, sigmaY: _animation.value),
               child: Image.asset(
-                'assets/filmes_flix.jpg', // Verifique se o caminho está certo no seu projeto!
+                'assets/logo_app_film.jpg', // Verifique se o caminho está certo no seu projeto!
                 width: 650,
               ),
             );
