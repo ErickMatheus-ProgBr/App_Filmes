@@ -15,6 +15,7 @@ class CategoriesScreen extends StatefulWidget {
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
   final Map<String, int> generos = {
+    "Todos": 0,
     "Ação": 28,
     "Comédia": 35,
     "Terror": 27,
@@ -28,46 +29,75 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   bool isLoading = false;
   int? generoSelecionado;
 
+  final ScrollController _scrollController = ScrollController();
+
   final String apiKey = "839ee2f7b3c54705b7711a9920805bf0";
   final String urlImagemBase = 'https://image.tmdb.org/t/p/w500';
 
+  @override
+  void initState() {
+    super.initState();
+    fetchFilmes(0, page: 1);
+  }
+
+  // 🔥 BUSCA 30 FILMES POR PÁGINA (Fazendo 2 requisições internas)
   Future<void> fetchFilmes(int generoId, {int page = 1}) async {
     setState(() {
       isLoading = true;
       generoSelecionado = generoId;
     });
 
-    final url =
-        'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR&region=BR&with_genres=$generoId&page=$page';
+    String genreFilter = generoId == 0 ? "" : "&with_genres=$generoId";
+
+    // Buscamos 3 páginas da API para ter "folga" de sobra após os filtros
+    final urls = [
+      'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR&region=BR$genreFilter&page=${(page * 3) - 2}',
+      'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR&region=BR$genreFilter&page=${(page * 3) - 1}',
+      'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR&region=BR$genreFilter&page=${page * 3}',
+    ];
 
     try {
-      final response = await http.get(Uri.parse(url));
+      List<Movie> listaTemporaria = [];
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final List results = data['results'];
+      for (var url in urls) {
+        final response = await http.get(Uri.parse(url));
+        if (response.statusCode == 200) {
+          final List results = json.decode(response.body)['results'];
+          listaTemporaria.addAll(results.map((e) => Movie.fromJson(e)));
+        }
+      }
 
-        // 🔥 FILTRO PROFISSIONAL (remove filmes sem tradução)
-        List<Movie> novosFilmes = results
-            .map((e) => Movie.fromJson(e))
-            .where((movie) => movie.title.isNotEmpty && movie.overview.isNotEmpty)
-            .toList();
+      // 🔥 FILTRO RIGOROSO: Remove tudo que não tem capa ou título
+      List<Movie> listaFiltrada = listaTemporaria
+          .where(
+            (movie) =>
+                movie.title.isNotEmpty &&
+                movie.posterPath != null &&
+                movie.posterPath.toString().length > 5,
+          )
+          .toList();
 
-        setState(() {
-          if (page == 1) {
-            filmes = novosFilmes;
-          } else {
-            filmes.addAll(novosFilmes);
-          }
-          currentPage = page;
-        });
+      setState(() {
+        // 🔥 O SEGREDO: Pegamos exatamente 30.
+        // Se houver menos de 30 (raro com 3 páginas), pegamos o maior múltiplo de 3.
+        int quantidadeFinal = (listaFiltrada.length >= 30) ? 30 : (listaFiltrada.length ~/ 3) * 3;
+
+        filmes = listaFiltrada.take(quantidadeFinal).toList();
+        currentPage = page;
+      });
+
+      // Sobe para o topo
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
       }
     } catch (e) {
       debugPrint("Erro: $e");
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
@@ -77,6 +107,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       backgroundColor: AppColors.blackColor,
       appBar: AppBar(
         backgroundColor: AppColors.blackColor,
+        elevation: 0,
         title: const Text(
           "Categorias",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -86,18 +117,29 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // 🔥 CATEGORIAS
+            // CATEGORIAS FIXAS NO TOPO
             SizedBox(
               height: 70,
               child: ListView(
                 scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                 children: generos.entries.map((entry) {
+                  final bool isSelected = generoSelecionado == entry.value;
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: ElevatedButton(
-                      onPressed: () {
-                        fetchFilmes(entry.value, page: 1);
-                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isSelected ? const Color(0xFFB71C1C) : Colors.grey[900],
+                        foregroundColor: Colors.white,
+                        elevation: isSelected ? 5 : 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          side: isSelected
+                              ? const BorderSide(color: Colors.red, width: 1.5)
+                              : BorderSide.none,
+                        ),
+                      ),
+                      onPressed: () => fetchFilmes(entry.value, page: 1),
                       child: Text(entry.key),
                     ),
                   );
@@ -105,67 +147,117 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               ),
             ),
 
-            const SizedBox(height: 10),
-
-            // 🔥 FILMES
             Expanded(
-              child: filmes.isEmpty
-                  ? const Center(
-                      child: Text("Selecione uma categoria", style: TextStyle(color: Colors.white)),
-                    )
-                  : GridView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: filmes.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        childAspectRatio: 0.45,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                      ),
-                      itemBuilder: (context, index) {
-                        final movie = filmes[index];
-
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => ScreenDetails(movie: movie)),
-                            );
-                          },
-                          child: CardFilm(
-                            title: movie.title,
-
-                            // 🔥 CORREÇÃO DE IMAGEM
-                            image: (movie.posterPath.isNotEmpty)
-                                ? "$urlImagemBase${movie.posterPath}"
-                                : "https://via.placeholder.com/300x450?text=Sem+Imagem",
+              child: isLoading && filmes.isEmpty
+                  ? const Center(child: CircularProgressIndicator(color: Colors.red))
+                  : CustomScrollView(
+                      controller: _scrollController,
+                      slivers: [
+                        SliverPadding(
+                          padding: const EdgeInsets.all(12),
+                          sliver: SliverGrid(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3, // 3 colunas fixas
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 25, // Espaço maior entre as linhas
+                              childAspectRatio: 0.38, // 🔥 AJUSTE DE PREENCHIMENTO DO CARD
+                            ),
+                            delegate: SliverChildBuilderDelegate((context, index) {
+                              final movie = filmes[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => ScreenDetails(movie: movie)),
+                                  );
+                                },
+                                child: CardFilm(
+                                  title: movie.title,
+                                  image: "$urlImagemBase${movie.posterPath}",
+                                ),
+                              );
+                            }, childCount: filmes.length),
                           ),
-                        );
-                      },
+                        ),
+
+                        // PAGINAÇÃO (Só aparece quando chegar no final)
+                        if (filmes.isNotEmpty && !isLoading)
+                          SliverToBoxAdapter(child: _buildDynamicPagination()),
+
+                        if (isLoading)
+                          const SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Center(child: CircularProgressIndicator(color: Colors.red)),
+                            ),
+                          ),
+                      ],
                     ),
             ),
-
-            // 🔥 BOTÃO PRÓXIMO
-            if (filmes.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton(
-                  onPressed: isLoading || generoSelecionado == null
-                      ? null
-                      : () {
-                          fetchFilmes(generoSelecionado!, page: currentPage + 1);
-                        },
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text("Carregar mais"),
-                ),
-              ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDynamicPagination() {
+    // Lógica para mostrar a janela de páginas (Sempre centrada na atual)
+    int startPage = currentPage > 2 ? currentPage - 2 : 1;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 30, bottom: 60),
+      child: Column(
+        children: [
+          const Divider(color: Colors.white10, indent: 30, endIndent: 30),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Voltar para a Página 1
+              if (currentPage > 1)
+                IconButton(
+                  icon: const Icon(Icons.first_page, color: Colors.white70, size: 28),
+                  onPressed: () => fetchFilmes(generoSelecionado ?? 0, page: 1),
+                ),
+
+              // Lista de Números (Mostra 5 por vez)
+              ...List.generate(5, (index) {
+                int pageNumber = startPage + index;
+                bool isCurrent = currentPage == pageNumber;
+
+                return GestureDetector(
+                  onTap: () => fetchFilmes(generoSelecionado ?? 0, page: pageNumber),
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: isCurrent ? Colors.red : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: isCurrent ? Colors.white : Colors.white24),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "$pageNumber",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+
+              // Avançar uma página
+              IconButton(
+                icon: const Icon(Icons.navigate_next, color: Colors.white70, size: 28),
+                onPressed: () => fetchFilmes(generoSelecionado ?? 0, page: currentPage + 1),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text("Página $currentPage", style: const TextStyle(color: Colors.white38, fontSize: 12)),
+        ],
       ),
     );
   }
