@@ -140,14 +140,64 @@ class _HomeScreenState extends State<HomeScreen> {
     final listaPopulares = listaFilmes.skip(20).toList();
 
     return Scaffold(
+      drawer: Drawer(
+        width: 290,
+        backgroundColor: Colors.black,
+        child: Column(
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: AppColors.accent),
+              child: Center(
+                child: Text(
+                  "Olá,",
+                  style: TextStyle(
+                    color: AppColors.whiteColor,
+                    fontSize: 29,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.favorite, color: AppColors.accent),
+              title: const Text('FAVORITOS ', style: TextStyle(color: AppColors.thirdColor)),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.book, color: AppColors.thirdColor),
+              title: const Text(' My Course ', style: TextStyle(color: AppColors.thirdColor)),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.logout, color: AppColors.thirdColor),
+              title: const Text('LogOut', style: TextStyle(color: AppColors.thirdColor)),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 450, left: 150),
+              child: Text("Versão 1.0.0", style: TextStyle(color: AppColors.whiteColor)),
+            ),
+          ],
+        ),
+      ),
+
       backgroundColor: AppColors.blackColor,
       appBar: AppBar(
-        toolbarHeight: 80,
+        // leading: Image.asset("assets/ff.png", height: 20, fit: BoxFit.cover),
+        toolbarHeight: 100,
         centerTitle: true,
         backgroundColor: AppColors.blackColor,
         title: const Text(
           "Filmes Flix",
-          style: TextStyle(fontSize: 31, fontWeight: FontWeight.bold, color: AppColors.whiteColor),
+          style: TextStyle(fontSize: 29, fontWeight: FontWeight.bold, color: AppColors.accent),
         ),
       ),
 
@@ -163,15 +213,96 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         // BANNER
                         SizedBox(
-                          height: 580,
+                          height: 500, // Ajuste a altura conforme seu design
                           child: PageView.builder(
                             controller: _pageController,
                             itemCount: listaBanner.length,
                             itemBuilder: (context, index) {
                               final movie = listaBanner[index];
-                              return Image.network(
-                                '$urlImagemBase${movie.backdropPath}',
-                                fit: BoxFit.cover,
+
+                              return InkWell(
+                                // 🔥 Ação de clique para abrir os detalhes
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ScreenDetails(movie: movie),
+                                    ),
+                                  );
+                                },
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    // 1. A IMAGEM DE FUNDO (Backdrop é melhor para horizontal)
+                                    Image.network(
+                                      'https://image.tmdb.org/t/p/w780${movie.backdropPath}',
+                                      fit: BoxFit.cover,
+                                      // Caso a imagem falhe, mostra um carregando
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          const Center(child: Icon(Icons.error)),
+                                    ),
+
+                                    // 2. O GRADIENTE (Para dar leitura ao texto)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.bottomCenter,
+                                          end: Alignment.topCenter,
+                                          colors: [
+                                            Colors.black.withOpacity(0.9), // Escuro embaixo
+                                            Colors.transparent, // Transparente em cima
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+                                    // 3. O TEXTO QUE ACOMPANHA O FILME
+                                    Positioned(
+                                      bottom: 40,
+                                      left: 20,
+                                      right: 20,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            movie.title.toUpperCase(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              shadows: [
+                                                Shadow(
+                                                  blurRadius: 8,
+                                                  color: Colors.black,
+                                                  offset: Offset(2, 2),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.play_circle_fill,
+                                                color: AppColors.accent,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                "ASSISTIR AGORA",
+                                                style: TextStyle(
+                                                  color: AppColors.accent,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.2,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               );
                             },
                           ),
