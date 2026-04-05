@@ -1,12 +1,20 @@
 import 'dart:async' as async_timer;
 import 'dart:convert';
 import 'package:app_film/screens/categories_screen.dart';
+import 'package:app_film/screens/favorites_screen.dart';
+import 'package:app_film/screens/login_screens.dart';
+import 'package:app_film/screens/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_film/models/movie_model.dart';
 import 'package:app_film/screens/screen_details.dart';
 import 'package:app_film/thema/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:app_film/widgets/card_film.dart';
+import 'package:app_film/services/api_services.dart'; // Import do seu serviço
+import 'package:app_film/models/movie_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -79,6 +87,28 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  Future<void> _fazerLogout(BuildContext context) async {
+    try {
+      // 1. Desloga do Firebase (encerra a sessão do banco de dados)
+      await FirebaseAuth.instance.signOut();
+
+      // 2. Desloga do Google (limpa o cache e permite escolher outra conta depois)
+      // Se você não usar essa linha, o logout parece que não funcionou
+      await GoogleSignIn().signOut();
+
+      // 3. Limpa a navegação para o usuário não conseguir "voltar" com o botão do celular
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false, // Remove todo o histórico de telas anteriores
+        );
+      }
+    } catch (e) {
+      print("Erro ao tentar sair: $e");
+    }
   }
 
   // Lógica da API (Você já tinha feito e está ótima!)
@@ -162,23 +192,49 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.favorite, color: AppColors.accent),
               title: const Text('FAVORITOS ', style: TextStyle(color: AppColors.thirdColor)),
-              onTap: () {
-                Navigator.pop(context);
+              onTap: () async {
+                Navigator.pop(context); // Fecha o menu lateral
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FavoritesScreen()),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.book, color: AppColors.thirdColor),
-              title: const Text(' My Course ', style: TextStyle(color: AppColors.thirdColor)),
+              title: const Text(' Meu Perfil ', style: TextStyle(color: AppColors.thirdColor)),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                );
               },
             ),
 
             ListTile(
               leading: const Icon(Icons.logout, color: AppColors.thirdColor),
               title: const Text('LogOut', style: TextStyle(color: AppColors.thirdColor)),
-              onTap: () {
+              onTap: () async {
+                // 1. Fecha o Drawer primeiro para não dar erro de contexto
                 Navigator.pop(context);
+
+                try {
+                  // 2. Desloga do Firebase e do Google
+                  await FirebaseAuth.instance.signOut();
+                  await GoogleSignIn().signOut();
+
+                  // 3. Manda para a tela de login e limpa a memória
+                  if (context.mounted) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  }
+                } catch (e) {
+                  debugPrint("Erro ao sair pelo menu: $e");
+                }
               },
             ),
             Padding(
