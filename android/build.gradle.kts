@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Esta é a linha que você queria saber onde colocar:
+        classpath("com.google.gms:google-services:4.4.1")
+    }
+}
+
 allprojects {
     repositories {
         google()
