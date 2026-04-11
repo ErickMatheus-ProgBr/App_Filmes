@@ -15,28 +15,36 @@ class CardFilm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.network(
-              image,
-              height: 230,
-              width: 160,
-              fit: BoxFit.cover,
-              // ADICIONE ISSO AQUI:
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(25),
+                child: Image.network(
+                  image,
                   height: 230,
                   width: 160,
-                  color: Colors.grey[900],
-                  child: const Center(child: CircularProgressIndicator(color: Colors.white)),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) =>
-                  Container(height: 230, color: Colors.grey, child: const Icon(Icons.broken_image)),
-            ),
+                  fit: BoxFit.cover,
+                  // ADICIONE ISSO AQUI:
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 230,
+                      width: 160,
+                      color: Colors.grey[900],
+                      child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 230,
+                    color: Colors.grey,
+                    child: const Icon(Icons.broken_image),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
-          const SizedBox(height: 8),
+
           Text(
             title,
             style: const TextStyle(
