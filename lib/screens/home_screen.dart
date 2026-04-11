@@ -176,16 +176,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: AppColors.accent),
+              decoration: BoxDecoration(color: AppColors.blackColor),
               child: Center(
-                child: Text(
-                  "Olá,",
-                  style: TextStyle(
-                    color: AppColors.whiteColor,
-                    fontSize: 29,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: Icon(Icons.movie_filter_outlined, size: 94, color: AppColors.accent),
               ),
             ),
 
@@ -247,13 +240,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
       backgroundColor: AppColors.blackColor,
       appBar: AppBar(
-        // leading: Image.asset("assets/ff.png", height: 20, fit: BoxFit.cover),
-        toolbarHeight: 100,
+        toolbarHeight: 70,
+        iconTheme: IconThemeData(color: AppColors.accent),
+        leading: Builder(
+          builder: (BuildContext contex) {
+            return IconButton(
+              onPressed: () {
+                Scaffold.of(contex).openDrawer();
+              },
+              icon: Icon(Icons.menu_outlined),
+            );
+          },
+        ),
         centerTitle: true,
         backgroundColor: AppColors.blackColor,
         title: const Text(
           "Filmes Flix",
-          style: TextStyle(fontSize: 29, fontWeight: FontWeight.bold, color: AppColors.accent),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: AppColors.accent),
         ),
       ),
 
@@ -269,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         // BANNER
                         SizedBox(
-                          height: 500, // Ajuste a altura conforme seu design
+                          height: 480, // Ajuste a altura conforme seu design
                           child: PageView.builder(
                             controller: _pageController,
                             itemCount: listaBanner.length,
@@ -370,15 +373,49 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                "LANÇAMENTOS",
-                                style: TextStyle(
-                                  fontSize: 21,
-                                  color: AppColors.whiteColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "LANÇAMENTOS",
+                                    style: TextStyle(
+                                      fontSize: 21,
+                                      color: AppColors.whiteColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: const Size(0, 10),
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                        onPressed: () {},
+                                        child: Text(
+                                          "Ver mais",
+                                          style: TextStyle(
+                                            color: AppColors.whiteColor,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        onPressed: () {},
+                                        icon: Icon(Icons.arrow_forward_outlined),
+                                        color: AppColors.whiteColor,
+                                        iconSize: 17,
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 10),
+
                               SizedBox(
                                 height: 340,
                                 child: ListView.builder(
@@ -521,10 +558,6 @@ class _HomeScreenState extends State<HomeScreen> {
           // --- CAMINHO FINAL: OUTRAS ABAS (Categorias/Perfil) ---
           : _currentIndex == 2
           ? const CategoriesScreen()
-          : _currentIndex == 3
-          ? const Center(
-              child: Text("Perfil em breve", style: TextStyle(color: Colors.white, fontSize: 20)),
-            )
           : const SizedBox(),
 
       bottomNavigationBar: BottomNavigationBar(
@@ -543,7 +576,6 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Início"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Pesquisar"),
           BottomNavigationBarItem(icon: Icon(Icons.category_outlined), label: "Categorias"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
       ),
     );

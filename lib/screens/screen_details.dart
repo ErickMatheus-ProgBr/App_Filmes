@@ -161,7 +161,7 @@ class _ScreenDetailsState extends State<ScreenDetails> {
                       style: const TextStyle(color: Colors.grey, fontSize: 16, height: 1.5),
                     ),
 
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 50),
                   ],
                 ),
               ),

@@ -65,6 +65,7 @@ class FavoritesScreen extends StatelessWidget {
                     Movie movie = Movie(
                       id: doc['id'],
                       title: doc['title'],
+
                       posterPath: doc['posterPath'],
                       backdropPath: doc['backdropPath'],
                       overview: "", // Pode buscar a sinopse se salvou no banco

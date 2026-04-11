@@ -81,30 +81,39 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(30),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 100),
         child: Column(
           children: [
             const SizedBox(height: 80),
-            const Icon(Icons.movie_filter, size: 100, color: AppColors.accent),
+            const Icon(Icons.movie_filter, size: 105, color: AppColors.accent),
             const SizedBox(height: 40),
 
             TextField(
               controller: _emailController,
+              cursorColor: AppColors.accent,
               keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.whiteColor),
               decoration: const InputDecoration(
-                labelText: "E-mail",
-                labelStyle: TextStyle(color: Colors.grey),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.accent),
+                ),
+                labelText: "E-mail:",
+                labelStyle: TextStyle(color: AppColors.thirdColor),
               ),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 18),
             TextField(
               controller: _senhaController,
+              cursorColor: AppColors.accent,
               obscureText: _obscureText,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.whiteColor),
               decoration: InputDecoration(
-                labelText: "Senha",
-                labelStyle: const TextStyle(color: Colors.grey),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.accent),
+                ),
+
+                labelText: "Senha:",
+                labelStyle: const TextStyle(color: AppColors.thirdColor),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureText ? Icons.visibility_off : Icons.visibility,
@@ -114,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 55),
 
             ElevatedButton(
               onPressed: _isLoading ? null : _loginEmailSenha,
@@ -122,15 +131,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 minimumSize: const Size(double.infinity, 50),
                 backgroundColor: AppColors.accent,
               ),
+
               child: _isLoading
                   ? const SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(color: Colors.white),
+                      child: CircularProgressIndicator(color: AppColors.background),
                     )
-                  : const Text("ENTRAR"),
+                  : const Text(
+                      "ENTRAR",
+                      style: TextStyle(color: AppColors.whiteColor, fontWeight: FontWeight.bold),
+                    ),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 20),
 
             OutlinedButton.icon(
               onPressed: _isLoading ? null : _signInWithGoogle,
@@ -141,6 +154,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 side: const BorderSide(color: Colors.white24),
               ),
             ),
+
+            const SizedBox(height: 10),
 
             TextButton(
               onPressed: () => Navigator.push(
