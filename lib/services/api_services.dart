@@ -3,11 +3,11 @@ import 'package:http/http.dart' as http;
 import 'package:app_film/models/movie_model.dart';
 
 class ApiService {
-  static const String apiKey = "SUA_API_KEY";
+  static const String apiKey = "839ee2f7b3c54705b7711a9920805bf0";
 
   static Future<List<Movie>> getActionMovies(int page) async {
     final url =
-        "https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&with_genres=28&page=$page";
+        "https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&with_genres=28&page=$page&language=pt-BR";
 
     final response = await http.get(Uri.parse(url));
 
@@ -23,7 +23,8 @@ class ApiService {
 
   // ADICIONE ESTAS NOVAS LINHAS ABAIXO
   static Future<List<Movie>> getPopularMovies(int page) async {
-    final url = "https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&page=$page";
+    final url =
+        "https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&page=$page&language=pt-BR";
 
     final response = await http.get(Uri.parse(url));
 

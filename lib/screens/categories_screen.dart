@@ -17,17 +17,26 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   final Map<String, int> generos = {
     "Todos": 0,
     "Ação": 28,
-    "Comédia": 35,
-    "Terror": 27,
-    "Drama": 18,
-    "Ficção": 878,
+    "Aventura": 12,
     "Animação": 16,
+    "Comédia": 35,
+    "Crime": 80,
+    "Documentário": 99,
+    "Drama": 18,
+    "Família": 10751,
+    "Fantasia": 14,
+    "Ficção": 878,
+    "Guerra": 10752,
+    "Mistério": 9648,
+    "Romance": 10749,
+    "Terror": 27,
+    "Suspense": 53,
   };
 
-  List<Movie> filmes = [];
-  int currentPage = 1;
-  bool isLoading = false;
-  int? generoSelecionado;
+  List<Movie> filmes = []; // Lista que armazena os filmes exibidos na grade
+  int currentPage = 1; // Controla a página atual da paginação
+  bool isLoading = false; // Indica se o app está buscando dados no momento
+  int? generoSelecionado; // Armazena qual gênero o usuário clicou
 
   final ScrollController _scrollController = ScrollController();
 
@@ -47,13 +56,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       generoSelecionado = generoId;
     });
 
-    String genreFilter = generoId == 0 ? "" : "&with_genres=$generoId";
+    String genreParam = generoId == 0 ? "" : "&with_genres=$generoId";
 
     // Buscamos 3 páginas da API para ter "folga" de sobra após os filtros
+    // Mude a variável urls para:
     final urls = [
-      'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR&region=BR$genreFilter&page=${(page * 3) - 2}',
-      'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR&region=BR$genreFilter&page=${(page * 3) - 1}',
-      'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR&region=BR$genreFilter&page=${page * 3}',
+      'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR$genreParam&page=${(page * 3) - 2}',
+      'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR$genreParam&page=${(page * 3) - 1}',
+      'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&language=pt-BR$genreParam&page=${page * 3}',
     ];
 
     try {
@@ -110,9 +120,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         elevation: 0,
         title: const Text(
           "Categorias",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
         ),
-        centerTitle: true,
+        // centerTitle: true,
       ),
       body: SafeArea(
         child: Column(
@@ -129,14 +139,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isSelected ? const Color(0xFFB71C1C) : Colors.grey[900],
-                        foregroundColor: Colors.white,
+                        backgroundColor: isSelected ? AppColors.accent : AppColors.background,
+                        foregroundColor: AppColors.whiteColor,
                         elevation: isSelected ? 5 : 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                           side: isSelected
-                              ? const BorderSide(color: Colors.red, width: 1.5)
-                              : BorderSide.none,
+                              ? const BorderSide(color: AppColors.whiteColor, width: 1.5)
+                              : BorderSide(
+                                  color: isSelected ? AppColors.accent : AppColors.whiteColor,
+                                  width: 1.5,
+                                ),
                         ),
                       ),
                       onPressed: () => fetchFilmes(entry.value, page: 1),

@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:app_film/models/movie_model.dart';
 import 'package:app_film/screens/player_screen.dart';
 import 'package:app_film/thema/app_colors.dart';
@@ -15,40 +13,6 @@ class ScreenDetails extends StatefulWidget {
 }
 
 class _ScreenDetailsState extends State<ScreenDetails> {
-  // FUNÇÃO PARA SALVAR NO FIREBASE
-  void _favoritarFilme() async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      // Salva na coleção: usuarios -> ID_DO_USER -> favoritos -> ID_DO_FILME
-      await FirebaseFirestore.instance
-          .collection('usuarios')
-          .doc(user.uid)
-          .collection('favoritos')
-          .doc(widget.movie.id.toString())
-          .set({
-            'id': widget.movie.id,
-            'title': widget.movie.title,
-            'posterPath': widget.movie.posterPath,
-            'backdropPath': widget.movie.backdropPath,
-            'voteAverage': widget.movie.voteAverage,
-            'timestamp': FieldValue.serverTimestamp(),
-          });
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("${widget.movie.title} adicionado aos favoritos! ❤️"),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Você precisa estar logado para favoritar!")));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final String urlImagemBase = 'https://image.tmdb.org/t/p/w500';
@@ -62,14 +26,7 @@ class _ScreenDetailsState extends State<ScreenDetails> {
               icon: Icon(Icons.arrow_back_rounded, color: AppColors.whiteColor, size: 35),
               onPressed: () => Navigator.pop(context),
             ),
-            // --- BOTÃO DE FAVORITOS ADICIONADO AQUI ---
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.favorite_border, color: Colors.red, size: 30),
-                onPressed: _favoritarFilme,
-              ),
-            ],
-            // ------------------------------------------
+            // Removi o 'actions' que continha o botão de favoritar
             expandedHeight: 300,
             pinned: true,
             backgroundColor: AppColors.blackColor,
@@ -117,6 +74,7 @@ class _ScreenDetailsState extends State<ScreenDetails> {
 
                     const SizedBox(height: 25),
 
+                    // BOTÃO ASSISTIR
                     SizedBox(
                       width: double.infinity,
                       height: 50,

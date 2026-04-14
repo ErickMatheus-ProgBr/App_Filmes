@@ -2,7 +2,7 @@ class Movie {
   final int id;
   final String title;
   final String backdropPath;
-  final String posterPath; // <--- ADICIONE ESTA LINHA
+  final String posterPath;
   final String overview;
   final double voteAverage;
 
@@ -10,7 +10,7 @@ class Movie {
     required this.id,
     required this.title,
     required this.backdropPath,
-    required this.posterPath, // <--- ADICIONE ESTA LINHA
+    required this.posterPath,
     required this.overview,
     required this.voteAverage,
   });
